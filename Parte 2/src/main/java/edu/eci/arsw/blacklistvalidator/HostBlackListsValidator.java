@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 public class HostBlackListsValidator {
 
     private static final int BLACK_LIST_ALARM_COUNT = 5;
+    private LinkedList<Integer> blackListOcurrences;
+    ArrayList<Thread> threadsList = new ArrayList<>();
 
     /**
      * Check the given host's IP address in all the available black lists,
@@ -38,7 +40,7 @@ public class HostBlackListsValidator {
      */
     public List<Integer> checkHost(String ipaddress, int n) {
 
-        LinkedList<Integer> blackListOcurrences = new LinkedList<>();
+        blackListOcurrences = new LinkedList<>();
 
         int ocurrencesCount = 0;
 
@@ -50,11 +52,9 @@ public class HostBlackListsValidator {
 
         int sup_limit = skds.getRegisteredServersCount();
 
-        ArrayList<Thread> threadsList = new ArrayList<>();
-
         for (int i = 0; i < n; i++) {
             ThreadHostBlackListValidator thread = new ThreadHostBlackListValidator(ipaddress,
-                    inf_limit + (i * (sup_limit - inf_limit) / n), inf_limit + ((i + 1) * (sup_limit - inf_limit) / n));
+                    inf_limit + (i * (sup_limit - inf_limit) / n), inf_limit + ((i + 1) * (sup_limit - inf_limit) / n), blackListOcurrences);
 
             threadsList.add(thread);
         }
@@ -63,19 +63,18 @@ public class HostBlackListsValidator {
             j.start();
         }
 
-        for (Thread k : threadsList) {
-            try {
-                k.join();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-            }
+        // for (Thread k : threadsList) {
+        //     try {
+        //         k.join();
+        //     } catch (InterruptedException e) {
+        //     }
+        // }
+
+        while(areThreadsAlive()) {
         }
 
         for (Thread l : threadsList) {
             ThreadHostBlackListValidator threadAux = (ThreadHostBlackListValidator) l;
-            for (Integer m : threadAux.getThreadBlackList()) {
-                blackListOcurrences.add(m);
-            }
             ocurrencesCount += threadAux.getOcurrences();
             checkedListsCount += threadAux.getCheckedList();
         }
@@ -93,5 +92,22 @@ public class HostBlackListsValidator {
     }
 
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
+
+    /**
+     * Check if the created threads are interrupted or not
+     * 
+     * @return true if at least one thread is interrupted, false otherwise
+     */
+    private boolean areThreadsAlive() {
+        for (Thread t : threadsList) {
+            if (t.isInterrupted()) {
+                for (Thread l : threadsList) {
+                    l.interrupt();
+                }
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
