@@ -98,7 +98,7 @@ public class HostBlackListsValidator {
     /**
      * Check if the created threads are interrupted or not
      * 
-     * @return true if at least one thread is interrupted, false otherwise
+     * @return false if at least one thread is interrupted, true otherwise
      */
     private boolean areThreadsAlive() {
         for (Thread t : threadsList) {
