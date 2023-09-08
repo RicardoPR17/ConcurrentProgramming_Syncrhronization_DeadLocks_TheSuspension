@@ -17,6 +17,8 @@ public class Immortal extends Thread {
 
     private final Random r = new Random(System.currentTimeMillis());
 
+    private boolean pause = false;
+
     public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue,
             ImmortalUpdateReportCallback ucb) {
         super(name);
@@ -30,6 +32,15 @@ public class Immortal extends Thread {
     public void run() {
 
         while (true) {
+            while (pause) {
+                try {
+                    synchronized (this) {
+                        this.wait();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             Immortal im;
 
             int myIndex = immortalsPopulation.indexOf(this);
@@ -79,6 +90,31 @@ public class Immortal extends Thread {
     public String toString() {
 
         return name + "[" + health + "]";
+    }
+
+    /**
+     * Set if the immortal is paused or not
+     * 
+     * @param pause boolean that represents if the immortal is paused or not
+     */
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    /**
+     * Get the state (paused or not) of the immortal
+     * 
+     * @return true if the immortal is paused, otherwise false
+     */
+    public boolean getPause() {
+        return pause;
+    }
+
+    /**
+     * Synchronized method to notify the immortal thread to start again his actions
+     */
+    public synchronized void startImmortal() {
+        notify();
     }
 
 }
