@@ -1,4 +1,5 @@
 Parte 3
-    2. Con N jugadores, sería N * 100 puntos de vida como invariante.
-    3. Al ejecutar la aplicación, se evidencia que no se cumple el invariante puesto que no controla que no se realicen modificaciones a la vida de los inmortales durante la revisión
-        de los puntos totales de vida.
+    2. Con N jugadores, sería N * 100 puntos de vida, esto como invariante.
+    3. Al ejecutar la aplicación, se evidencia que no se cumple el invariante con la opción 'pause and check' 
+    puesto que no controla que se realicen modificaciones a la vida de los inmortales durante 
+    la revisión de los puntos totales de vida.
