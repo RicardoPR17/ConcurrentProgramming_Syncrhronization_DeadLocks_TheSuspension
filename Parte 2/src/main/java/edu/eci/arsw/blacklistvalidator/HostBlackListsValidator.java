@@ -65,13 +65,6 @@ public class HostBlackListsValidator {
             j.start();
         }
 
-        // for (Thread k : threadsList) {
-        // try {
-        // k.join();
-        // } catch (InterruptedException e) {
-        // }
-        // }
-
         while (areThreadsAlive()) {
         }
 
@@ -96,15 +89,15 @@ public class HostBlackListsValidator {
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
 
     /**
-     * Check if the created threads are interrupted or not
+     * Check if the created threads are stopped or not
      * 
-     * @return false if at least one thread is interrupted, true otherwise
+     * @return false if at least one thread is stopped, true otherwise
      */
     private boolean areThreadsAlive() {
         for (Thread t : threadsList) {
-            if (t.isInterrupted()) {
+            if (t.getState() == Thread.State.TERMINATED) {
                 for (Thread l : threadsList) {
-                    l.interrupt();
+                    l.stop();
                 }
                 return false;
             }

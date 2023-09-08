@@ -77,11 +77,10 @@ public class ThreadHostBlackListValidator extends Thread {
 
                     this.ocurrences++;
                 } else {
-                    break;
+                    this.stop();
                 }
             }
         }
-        this.interrupt();
     }
 
     /**
