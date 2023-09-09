@@ -37,8 +37,6 @@ public class ControlFrame extends JFrame {
     private JScrollPane scrollPane;
     private JTextField numOfImmortals;
 
-
-
     /**
      * Launch the application.
      */
@@ -90,17 +88,20 @@ public class ControlFrame extends JFrame {
         JButton btnPauseAndCheck = new JButton("Pause and check");
         btnPauseAndCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List<Immortal> immortalsPopulationDead= new ArrayList<>();
+                List<Immortal> immortalsPopulationDead = new ArrayList<>();
+
                 for (Immortal i : immortals) {
                     i.setPause(true);
                     immortalsPopulationDead.add(i);
                 }
-                for (Immortal im: immortalsPopulationDead){
-                    if(im.getHealth()==0){
+
+                for (Immortal im : immortalsPopulationDead) {
+                    if (im.getHealth() == 0) {
                         im.stop();
                         immortals.remove(im);
                     }
                 }
+
                 int sum = 0;
                 for (Immortal im : immortals) {
                     sum += im.getHealth();
@@ -138,7 +139,7 @@ public class ControlFrame extends JFrame {
         btnStop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for(Immortal im: immortals ){
+                for (Immortal im : immortals) {
                     im.stop();
                 }
             }

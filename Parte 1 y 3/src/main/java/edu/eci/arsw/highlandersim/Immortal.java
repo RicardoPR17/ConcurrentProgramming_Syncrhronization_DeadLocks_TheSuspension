@@ -1,6 +1,5 @@
 package edu.eci.arsw.highlandersim;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,8 +18,6 @@ public class Immortal extends Thread {
     private final Random r = new Random(System.currentTimeMillis());
 
     private boolean pause = false;
-
-
 
     public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue,
             ImmortalUpdateReportCallback ucb) {
@@ -46,8 +43,8 @@ public class Immortal extends Thread {
                     e.printStackTrace();
                 }
             }
-            synchronized (immortalsPopulation){
 
+            synchronized (immortalsPopulation) {
                 Immortal im;
 
                 int myIndex = immortalsPopulation.indexOf(this);
@@ -57,12 +54,10 @@ public class Immortal extends Thread {
                 // avoid self-fight
                 if (nextFighterIndex == myIndex) {
                     nextFighterIndex = ((nextFighterIndex + 1) % immortalsPopulation.size());
-
                 }
 
-
                 im = immortalsPopulation.get(nextFighterIndex);
-                if(im.getHealth()>0){
+                if (im.getHealth() > 0) {
                     this.fight(im);
                 }
 
@@ -78,7 +73,7 @@ public class Immortal extends Thread {
 
     }
 
-    public  void fight(Immortal i2) {
+    public void fight(Immortal i2) {
 
         if (i2.getHealth() > 0) {
             i2.changeHealth(i2.getHealth() - defaultDamageValue);
