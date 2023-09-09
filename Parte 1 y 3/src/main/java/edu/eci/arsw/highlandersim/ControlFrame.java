@@ -2,6 +2,7 @@ package edu.eci.arsw.highlandersim;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class ControlFrame extends JFrame {
     private JLabel statisticsLabel;
     private JScrollPane scrollPane;
     private JTextField numOfImmortals;
+
+
 
     /**
      * Launch the application.
@@ -87,8 +90,16 @@ public class ControlFrame extends JFrame {
         JButton btnPauseAndCheck = new JButton("Pause and check");
         btnPauseAndCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                List<Immortal> immortalsPopulationDead= new ArrayList<>();
                 for (Immortal i : immortals) {
                     i.setPause(true);
+                    immortalsPopulationDead.add(i);
+                }
+                for (Immortal im: immortalsPopulationDead){
+                    if(im.getHealth()==0){
+                        im.stop();
+                        immortals.remove(im);
+                    }
                 }
                 int sum = 0;
                 for (Immortal im : immortals) {
@@ -123,6 +134,15 @@ public class ControlFrame extends JFrame {
 
         JButton btnStop = new JButton("STOP");
         btnStop.setForeground(Color.RED);
+
+        btnStop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(Immortal im: immortals ){
+                    im.stop();
+                }
+            }
+        });
         toolBar.add(btnStop);
 
         scrollPane = new JScrollPane();

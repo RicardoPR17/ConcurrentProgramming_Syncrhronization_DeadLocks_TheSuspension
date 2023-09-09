@@ -1,5 +1,6 @@
 package edu.eci.arsw.highlandersim;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +20,8 @@ public class Immortal extends Thread {
 
     private boolean pause = false;
 
+
+
     public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue,
             ImmortalUpdateReportCallback ucb) {
         super(name);
@@ -27,22 +30,12 @@ public class Immortal extends Thread {
         this.immortalsPopulation = immortalsPopulation;
         this.health = health;
         this.defaultDamageValue = defaultDamageValue;
+
     }
 
     public void run() {
 
         while (getHealth() > 0) {
-            int contImmortalDead = 0;
-            for (Immortal i : immortalsPopulation) {
-                if (i.getHealth() == 0) {
-                    contImmortalDead++;
-                }
-            }
-
-            if (contImmortalDead == immortalsPopulation.size() - 1) {
-                updateCallback.processReport(this + " is the winner!");
-                break;
-            }
 
             while (pause) {
                 try {
@@ -53,24 +46,27 @@ public class Immortal extends Thread {
                     e.printStackTrace();
                 }
             }
-            Immortal im;
+            synchronized (immortalsPopulation){
 
-            int myIndex = immortalsPopulation.indexOf(this);
+                Immortal im;
 
-            int nextFighterIndex = r.nextInt(immortalsPopulation.size());
+                int myIndex = immortalsPopulation.indexOf(this);
 
-            // avoid self-fight
-            if (nextFighterIndex == myIndex) {
-                nextFighterIndex = ((nextFighterIndex + 1) % immortalsPopulation.size());
-            }
+                int nextFighterIndex = r.nextInt(immortalsPopulation.size());
 
-            synchronized (this) {
-                im = immortalsPopulation.get(nextFighterIndex);
-                synchronized (im) {
-                    this.fight(im);
-                    im.notify();
+                // avoid self-fight
+                if (nextFighterIndex == myIndex) {
+                    nextFighterIndex = ((nextFighterIndex + 1) % immortalsPopulation.size());
+
                 }
-                this.notify();
+
+
+                im = immortalsPopulation.get(nextFighterIndex);
+                if(im.getHealth()>0){
+                    this.fight(im);
+                }
+
+                immortalsPopulation.notify();
             }
 
             try {
@@ -79,9 +75,10 @@ public class Immortal extends Thread {
                 e.printStackTrace();
             }
         }
+
     }
 
-    public void fight(Immortal i2) {
+    public  void fight(Immortal i2) {
 
         if (i2.getHealth() > 0) {
             i2.changeHealth(i2.getHealth() - defaultDamageValue);
