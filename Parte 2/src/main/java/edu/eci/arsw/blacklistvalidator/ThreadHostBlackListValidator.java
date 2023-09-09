@@ -29,7 +29,7 @@ public class ThreadHostBlackListValidator extends Thread {
     /**
      * Number of appearances of the suspicious host in the servers
      */
-    private int ocurrences;
+    private int ocurrences = 0;
     /**
      * Number of servers checked in the range
      */
@@ -37,7 +37,7 @@ public class ThreadHostBlackListValidator extends Thread {
     /**
      * List with the server's number where the suspicious host was found
      */
-    private LinkedList<Integer> threadBlackList = new LinkedList<>();
+    private LinkedList<Integer> threadBlackList;
 
     /**
      * Constructor of the thread to check the suspicious host
@@ -46,10 +46,11 @@ public class ThreadHostBlackListValidator extends Thread {
      * @param inf_limit Lower range of the servers to check
      * @param sup_limit Higher range of the servers to check
      */
-    public ThreadHostBlackListValidator(String ip, int inf_limit, int sup_limit) {
+    public ThreadHostBlackListValidator(String ip, int inf_limit, int sup_limit, LinkedList<Integer> threadBlackList) {
         this.ip = ip;
         this.inf_limit = inf_limit;
         this.sup_limit = sup_limit;
+        this.threadBlackList = threadBlackList;
     }
 
     /**
@@ -59,25 +60,27 @@ public class ThreadHostBlackListValidator extends Thread {
      */
     @Override
     public void run() {
-
-        int ocurrencesCount = 0;
-
         HostBlacklistsDataSourceFacade skds = HostBlacklistsDataSourceFacade.getInstance();
 
         checkedListsCount = 0;
 
-        for (int i = inf_limit; i < sup_limit && ocurrencesCount < BLACK_LIST_ALARM_COUNT; i++) {
+        for (int i = inf_limit; i < sup_limit && ocurrences < BLACK_LIST_ALARM_COUNT; i++) {
             checkedListsCount++;
 
             if (skds.isInBlackListServer(i, ip)) {
 
-                threadBlackList.add(i);
+                if (this.threadBlackList.size() <= BLACK_LIST_ALARM_COUNT - 1) {
 
-                ocurrencesCount++;
+                    synchronized (this.threadBlackList) {
+                        threadBlackList.add(i);
+                    }
+
+                    this.ocurrences++;
+                } else {
+                    this.stop();
+                }
             }
         }
-
-        this.ocurrences = ocurrencesCount;
     }
 
     /**
