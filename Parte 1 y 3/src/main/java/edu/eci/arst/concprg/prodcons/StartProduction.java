@@ -16,11 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class StartProduction {
-    
-    
+
     public static void main(String[] args) {
-        
-        Queue<Integer> queue=new LinkedBlockingQueue<>();
+        Queue<Integer> queue = new LinkedBlockingQueue<>();
         
         
         new Producer(queue,Integer.MAX_VALUE).start();
@@ -31,10 +29,6 @@ public class StartProduction {
         } catch (InterruptedException ex) {
             Logger.getLogger(StartProduction.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
         new Consumer(queue).start();
     }
-    
-
 }
