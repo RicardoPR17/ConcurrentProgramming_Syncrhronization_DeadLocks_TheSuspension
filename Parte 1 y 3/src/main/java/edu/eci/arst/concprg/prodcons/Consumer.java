@@ -22,12 +22,23 @@ public class Consumer extends Thread{
     
     @Override
     public void run() {
+        boolean firsttime=false;
         while (true) {
 
-            if (queue.size() > 0) {
-                int elem=queue.poll();
-                System.out.println("Consumer consumes "+elem);                                
+            synchronized (queue){
+                if (queue.size() > 0) {
+                    int elem=queue.poll();
+                    System.out.println("Consumer consumes "+elem);
+                }else {
+                    if(firsttime){
+                        break;
+                    }else {
+                        firsttime=true;
+                    }
+                }
+
             }
+
             
         }
     }
