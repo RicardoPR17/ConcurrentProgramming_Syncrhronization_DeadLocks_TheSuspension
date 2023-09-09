@@ -40,7 +40,6 @@ public class Immortal extends Thread {
                         this.wait();
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
 
